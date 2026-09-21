@@ -1,1091 +1,141 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Diagnóstico de Uso de IA — Perú</title>
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Barlow+Condensed:wght@500;600;700&family=Arial&display=swap" rel="stylesheet">
-<style>
-  :root{
-    --yellow:#F5C800;
-    --black:#1A1A1A;
-    --gray-900:#2B2B2B;
-    --gray-600:#707070;
-    --gray-300:#D6D6D6;
-    --gray-100:#F5F5F5;
-    --white:#FFFFFF;
-    --error:#C0392B;
-    --ok:#2E7D32;
-    --max-w:760px;
-  }
-  *{box-sizing:border-box;}
-  html,body{margin:0;padding:0;}
-  body{
-    font-family:Arial, Helvetica, sans-serif;
-    color:var(--black);
-    background:var(--gray-100);
-    line-height:1.5;
-    -webkit-text-size-adjust:100%;
-  }
-  header.topbar{
-    background:var(--black);
-    color:var(--white);
-    padding:18px 20px;
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    border-bottom:4px solid var(--yellow);
-  }
-  header.topbar .brand{
-    font-family:'Barlow Condensed', Arial, sans-serif;
-    font-weight:700;
-    font-size:22px;
-    letter-spacing:0.5px;
-    text-transform:uppercase;
-  }
-  header.topbar .brand span{color:var(--yellow);}
-  header.topbar button.linklike{
-    background:none;
-    border:none;
-    color:var(--gray-300);
-    font-size:13px;
-    cursor:pointer;
-    text-decoration:underline;
-    padding:0;
-  }
-  header.topbar button.linklike:hover{color:var(--yellow);}
+/**
+ * APPS SCRIPT — Diagnóstico de Uso de IA, Grupo Boytec — PERÚ
+ * ----------------------------------------------------------
+ * Este código se pega en el editor de Apps Script vinculado a un
+ * Google Sheet (Extensiones > Apps Script). Crea automáticamente la
+ * hoja "Respuestas" con encabezados, registra cada envío del
+ * formulario (doPost) y entrega todos los datos al panel admin
+ * (doGet, vía JSONP) protegidos por una clave compartida.
+ *
+ * IMPORTANTE: ADMIN_KEY debe coincidir EXACTAMENTE con la constante
+ * ADMIN_KEY definida en index-peru.html.
+ */
 
-  main{
-    max-width:var(--max-w);
-    margin:0 auto;
-    padding:24px 16px 60px 16px;
-  }
+const SHEET_NAME = "Respuestas";
+const ADMIN_KEY = "boytec2026"; // <-- cámbiala si quieres mayor seguridad,
+                                 //     y actualiza también index-peru.html
 
-  .card{
-    background:var(--white);
-    border:1px solid var(--gray-300);
-    border-radius:4px;
-    padding:24px;
-    margin-bottom:18px;
-  }
-
-  h1{
-    font-family:'Barlow Condensed', Arial, sans-serif;
-    font-weight:700;
-    font-size:28px;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-    margin:0 0 6px 0;
-    border-left:6px solid var(--yellow);
-    padding-left:12px;
-  }
-  h2{
-    font-family:'Barlow Condensed', Arial, sans-serif;
-    font-weight:600;
-    font-size:20px;
-    text-transform:uppercase;
-    letter-spacing:0.4px;
-    margin:0 0 14px 0;
-  }
-  p.lead{font-size:15px;color:var(--gray-900);}
-  p.small{font-size:13px;color:var(--gray-600);}
-
-  .q{
-    border-top:1px solid var(--gray-300);
-    padding-top:18px;
-    margin-top:18px;
-  }
-  .q:first-of-type{border-top:none;margin-top:0;padding-top:0;}
-  .q-num{
-    display:inline-block;
-    font-family:'Barlow Condensed', Arial, sans-serif;
-    font-weight:700;
-    font-size:34px;
-    color:var(--gray-300);
-    margin-right:10px;
-    vertical-align:middle;
-    line-height:1;
-  }
-  .q-title{
-    font-size:16px;
-    font-weight:bold;
-    margin:0 0 12px 0;
-  }
-  .options label{
-    display:flex;
-    align-items:flex-start;
-    gap:10px;
-    padding:8px 10px;
-    border:1px solid var(--gray-300);
-    border-radius:3px;
-    margin-bottom:6px;
-    cursor:pointer;
-    font-size:14.5px;
-    transition:background .12s, border-color .12s;
-  }
-  .options label:hover{background:var(--gray-100); border-color:var(--gray-600);}
-  .options input[type=radio], .options input[type=checkbox]{
-    margin-top:3px;
-    width:17px;
-    height:17px;
-    flex:none;
-    accent-color:var(--black);
-  }
-  .otro-input{
-    margin-top:8px;
-    margin-left:2px;
-  }
-  .otro-input input[type=text]{
-    width:100%;
-    padding:9px 10px;
-    border:1px solid var(--gray-300);
-    border-radius:3px;
-    font-size:14px;
-    font-family:Arial, Helvetica, sans-serif;
-  }
-  .otro-input{display:none;}
-  .otro-input.show{display:block;}
-
-  input[type=email], input[type=text], input[type=password]{
-    width:100%;
-    padding:11px 12px;
-    border:1px solid var(--gray-300);
-    border-radius:3px;
-    font-size:15px;
-    font-family:Arial, Helvetica, sans-serif;
-  }
-  input:focus, label:focus-within, button:focus{
-    outline:2px solid var(--yellow);
-    outline-offset:1px;
-  }
-
-  .error-msg{
-    color:var(--error);
-    font-size:13px;
-    margin-top:6px;
-    display:none;
-  }
-  .error-msg.show{display:block;}
-  .q.has-error .options, .q.has-error input[type=email]{
-    border-left:3px solid var(--error);
-    padding-left:8px;
-  }
-
-  .btn{
-    display:inline-block;
-    background:var(--black);
-    color:var(--white);
-    border:none;
-    border-radius:3px;
-    padding:13px 26px;
-    font-size:15px;
-    font-weight:bold;
-    font-family:Arial, Helvetica, sans-serif;
-    cursor:pointer;
-    text-transform:uppercase;
-    letter-spacing:0.5px;
-  }
-  .btn:hover{background:var(--gray-900);}
-  .btn.btn-yellow{background:var(--yellow); color:var(--black);}
-  .btn.btn-yellow:hover{background:#ddb300;}
-  .btn.btn-secondary{background:var(--white); color:var(--black); border:1px solid var(--gray-600);}
-  .btn.btn-secondary:hover{background:var(--gray-100);}
-  .btn:disabled{opacity:.6; cursor:not-allowed;}
-
-  .actions{display:flex; gap:12px; align-items:center; flex-wrap:wrap; margin-top:8px;}
-
-  .banner{
-    padding:12px 14px;
-    border-radius:3px;
-    font-size:14px;
-    margin-bottom:16px;
-  }
-  .banner.ok{background:#E7F4E8; color:var(--ok); border:1px solid var(--ok);}
-  .banner.error{background:#FBEAE8; color:var(--error); border:1px solid var(--error);}
-
-  .hidden{display:none !important;}
-
-  table{
-    width:100%;
-    border-collapse:collapse;
-    font-size:12.5px;
-  }
-  table th, table td{
-    border:1px solid var(--gray-300);
-    padding:6px 8px;
-    text-align:left;
-    vertical-align:top;
-  }
-  table th{
-    background:var(--black);
-    color:var(--white);
-    font-family:'Barlow Condensed', Arial, sans-serif;
-    text-transform:uppercase;
-    letter-spacing:0.3px;
-    font-weight:600;
-    position:sticky;
-    top:0;
-  }
-  .table-wrap{overflow:auto; max-height:480px; border:1px solid var(--gray-300);}
-
-  .stats-grid{
-    display:grid;
-    grid-template-columns:repeat(auto-fit, minmax(220px,1fr));
-    gap:14px;
-    margin-bottom:18px;
-  }
-  .stat-box{border:1px solid var(--gray-300); border-radius:3px; padding:12px 14px;}
-  .stat-box h3{
-    font-family:'Barlow Condensed', Arial, sans-serif;
-    font-size:14px;
-    text-transform:uppercase;
-    margin:0 0 8px 0;
-    color:var(--gray-600);
-    letter-spacing:0.4px;
-  }
-  .bar-row{display:flex; align-items:center; gap:8px; font-size:12.5px; margin-bottom:4px;}
-  .bar-label{flex:0 0 150px; word-break:break-word;}
-  .bar-track{flex:1; background:var(--gray-100); border-radius:2px; overflow:hidden; height:14px;}
-  .bar-fill{background:var(--yellow); height:100%;}
-  .bar-count{flex:0 0 28px; text-align:right; color:var(--gray-600);}
-
-  footer{
-    text-align:center;
-    font-size:12px;
-    color:var(--gray-600);
-    padding:20px 0 40px 0;
-  }
-
-  @media (max-width:480px){
-    h1{font-size:23px;}
-    .q-num{font-size:26px;}
-    .bar-label{flex-basis:110px;}
-  }
-</style>
-</head>
-<body>
-
-<header class="topbar">
-  <div class="brand">Grupo <span>Boytec</span> · IA Corporativa</div>
-  <button class="linklike" id="toggleAdminBtn" type="button">Acceso administrador</button>
-</header>
-
-<main>
-
-  <!-- ===================== VISTA: ENCUESTA ===================== -->
-  <section id="surveyView">
-
-    <div class="card">
-      <h1>Diagnóstico de Uso de IA — Perú</h1>
-      <p class="lead">
-        El grupo de empresas está definiendo el uso de IA para sus operaciones de trabajo. A
-        continuación, se presenta una encuesta que tiene como único objetivo conocer qué tan
-        habituado usted está en el uso de IA: qué herramientas se utilizan, para qué tipo de
-        tareas y con qué frecuencia. Con esta información construiremos una estrategia
-        corporativa de IA (cuentas enterprise, capacitación y soporte) ajustada a las
-        necesidades reales de los equipos.
-      </p>
-      <p class="lead">
-        <strong>Tus respuestas son confidenciales.</strong> La alta dirección sólo conocerá los
-        resultados agregados de toda la muestra, nunca respuestas individuales. El correo se
-        solicita únicamente para evitar duplicados y filtrar por empresa.
-      </p>
-      <p class="small">Tiempo estimado: 3–4 minutos. Todas las preguntas son obligatorias.</p>
-    </div>
-
-    <div id="formBanner"></div>
-
-    <form id="surveyForm" novalidate>
-
-      <!-- Identificación -->
-      <div class="card">
-        <div class="q" id="q-email">
-          <p class="q-title">Correo corporativo</p>
-          <input type="email" id="correo" name="correo" placeholder="nombre.apellido@empresa.pe" autocomplete="email" required>
-          <div class="error-msg">Ingresa un correo corporativo válido (no se aceptan correos personales como gmail, hotmail, etc.).</div>
-        </div>
-      </div>
-
-      <!-- Q1 -->
-      <div class="card">
-        <div class="q" id="q-empresa">
-          <p class="q-title"><span class="q-num">1</span>¿En qué empresa del Grupo trabajas?</p>
-          <div class="options" data-name="empresa">
-            <label><input type="radio" name="empresa" value="Geotec Perú"><span>Geotec Perú</span></label>
-            <label><input type="radio" name="empresa" value="Christensen Boyles Perú (CBP)"><span>Christensen Boyles Perú (CBP)</span></label>
-            <label><input type="radio" name="empresa" value="MDF Perú"><span>MDF Perú (Mining Drilling Fluids)</span></label>
-            <label><input type="radio" name="empresa" value="Technosteel Perú (TST Perú)"><span>Technosteel Perú (TST Perú)</span></label>
-            <label><input type="radio" name="empresa" value="Holding Perú"><span>Holding / Corporativo Perú</span></label>
-            <label><input type="radio" name="empresa" value="Otra" data-otro-trigger="empresa-otro"><span>Otra</span></label>
-          </div>
-          <div class="otro-input" id="empresa-otro-wrap">
-            <input type="text" id="empresa-otro" placeholder="Indica cuál">
-          </div>
-          <div class="error-msg">Selecciona una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q2 -->
-      <div class="card">
-        <div class="q" id="q-area">
-          <p class="q-title"><span class="q-num">2</span>¿En qué área te desempeñas?</p>
-          <div class="options" data-name="area">
-            <label><input type="radio" name="area" value="Dirección"><span>Dirección</span></label>
-            <label><input type="radio" name="area" value="Comercial"><span>Comercial</span></label>
-            <label><input type="radio" name="area" value="Operaciones"><span>Operaciones</span></label>
-            <label><input type="radio" name="area" value="Operaciones en Sitio (faena/mina)"><span>Operaciones en Sitio (faena/mina)</span></label>
-            <label><input type="radio" name="area" value="Producción"><span>Producción</span></label>
-            <label><input type="radio" name="area" value="Administración y Finanzas"><span>Administración y Finanzas</span></label>
-            <label><input type="radio" name="area" value="Cumplimiento Regulatorio y Legal"><span>Cumplimiento Regulatorio y Legal</span></label>
-            <label><input type="radio" name="area" value="HSEC"><span>HSEC</span></label>
-            <label><input type="radio" name="area" value="RRHH"><span>RRHH</span></label>
-            <label><input type="radio" name="area" value="Otra" data-otro-trigger="area-otro"><span>Otra</span></label>
-          </div>
-          <div class="otro-input" id="area-otro-wrap">
-            <input type="text" id="area-otro" placeholder="Indica cuál">
-          </div>
-          <div class="error-msg">Selecciona una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q3: Conectividad (NUEVA) -->
-      <div class="card">
-        <div class="q" id="q-conectividad">
-          <p class="q-title"><span class="q-num">3</span>¿Tienes acceso consistente a internet/cloud desde tu puesto de trabajo?</p>
-          <div class="options" data-name="conectividad">
-            <label><input type="radio" name="conectividad" value="Sí, consistente"><span>Sí, tengo acceso consistente desde mi puesto</span></label>
-            <label><input type="radio" name="conectividad" value="Parcial"><span>Parcial — depende del lugar donde trabajé (oficina vs. faena)</span></label>
-            <label><input type="radio" name="conectividad" value="No"><span>No, mi trabajo es principalmente en zonas sin conectividad cloud</span></label>
-          </div>
-          <div class="error-msg">Selecciona una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q4 (antes Q3) -->
-      <div class="card">
-        <div class="q" id="q-herramientas">
-          <p class="q-title"><span class="q-num">4</span>¿Qué herramienta(s) de IA utilizas actualmente para tu trabajo? <em style="font-weight:normal;">(puedes marcar más de una)</em></p>
-          <div class="options" data-name="herramientas">
-            <label><input type="checkbox" name="herramientas" value="ChatGPT (OpenAI)"><span>ChatGPT (OpenAI)</span></label>
-            <label><input type="checkbox" name="herramientas" value="Claude (Anthropic)"><span>Claude (Anthropic)</span></label>
-            <label><input type="checkbox" name="herramientas" value="Gemini / Google AI"><span>Gemini / Google AI</span></label>
-            <label><input type="checkbox" name="herramientas" value="NotebookLM"><span>NotebookLM</span></label>
-            <label><input type="checkbox" name="herramientas" value="Microsoft Copilot"><span>Microsoft Copilot</span></label>
-            <label><input type="checkbox" name="herramientas" value="DeepSeek"><span>DeepSeek</span></label>
-            <label><input type="checkbox" name="herramientas" value="Perplexity AI"><span>Perplexity AI</span></label>
-            <label><input type="checkbox" name="herramientas" value="No utilizo ninguna herramienta de IA" data-exclusive="true"><span>No utilizo ninguna herramienta de IA</span></label>
-            <label><input type="checkbox" name="herramientas" value="Otra(s)" data-otro-trigger="herramientas-otro"><span>Otra(s)</span></label>
-          </div>
-          <div class="otro-input" id="herramientas-otro-wrap">
-            <input type="text" id="herramientas-otro" placeholder="Indica cuál(es)">
-          </div>
-          <div class="error-msg">Selecciona al menos una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q5 (antes Q4) -->
-      <div class="card">
-        <div class="q" id="q-tareas">
-          <p class="q-title"><span class="q-num">5</span>¿Para qué tipo de tareas usas estas herramientas? <em style="font-weight:normal;">(puedes marcar más de una)</em></p>
-          <div class="options" data-name="tareas">
-            <label><input type="checkbox" name="tareas" value="Redacción y revisión de correos, informes o documentos"><span>Redacción y revisión de correos, informes o documentos</span></label>
-            <label><input type="checkbox" name="tareas" value="Análisis de datos y planillas (Excel u otros)"><span>Análisis de datos y planillas (Excel u otros)</span></label>
-            <label><input type="checkbox" name="tareas" value="Programación, scripts o revisión de código"><span>Programación, scripts o revisión de código</span></label>
-            <label><input type="checkbox" name="tareas" value="Búsqueda de información y resúmenes"><span>Búsqueda de información y resúmenes</span></label>
-            <label><input type="checkbox" name="tareas" value="Traducción de textos"><span>Traducción de textos</span></label>
-            <label><input type="checkbox" name="tareas" value="Creación de presentaciones"><span>Creación de presentaciones</span></label>
-            <label><input type="checkbox" name="tareas" value="Generación de imágenes, gráficos o diseño"><span>Generación de imágenes, gráficos o diseño</span></label>
-            <label><input type="checkbox" name="tareas" value="Soporte técnico o resolución de problemas"><span>Soporte técnico o resolución de problemas</span></label>
-            <label><input type="checkbox" name="tareas" value="Para adquirir conocimientos"><span>Para adquirir conocimientos</span></label>
-            <label><input type="checkbox" name="tareas" value="Cumplimiento regulatorio y reportes (SUNAT, AFP, laboral)"><span>Cumplimiento regulatorio y reportes (SUNAT, AFP, laboral)</span></label>
-            <label><input type="checkbox" name="tareas" value="Integración con ERP local o sistemas corporativos"><span>Integración con ERP local o sistemas corporativos</span></label>
-            <label><input type="checkbox" name="tareas" value="No aplica" data-exclusive="true"><span>No aplica / no uso IA</span></label>
-            <label><input type="checkbox" name="tareas" value="Otra(s)" data-otro-trigger="tareas-otro"><span>Otra(s)</span></label>
-          </div>
-          <div class="otro-input" id="tareas-otro-wrap">
-            <input type="text" id="tareas-otro" placeholder="Indica cuál(es)">
-          </div>
-          <div class="error-msg">Selecciona al menos una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q6 (antes Q5) -->
-      <div class="card">
-        <div class="q" id="q-frecuencia">
-          <p class="q-title"><span class="q-num">6</span>¿Con qué frecuencia utilizas herramientas de IA en tu trabajo?</p>
-          <div class="options" data-name="frecuencia">
-            <label><input type="radio" name="frecuencia" value="Varias veces al día"><span>Varias veces al día</span></label>
-            <label><input type="radio" name="frecuencia" value="Varias veces por semana"><span>Varias veces por semana</span></label>
-            <label><input type="radio" name="frecuencia" value="Una vez por semana"><span>Una vez por semana</span></label>
-            <label><input type="radio" name="frecuencia" value="Una vez al día"><span>Una vez al día</span></label>
-            <label><input type="radio" name="frecuencia" value="Ocasionalmente (menos de una vez por semana)"><span>Ocasionalmente (menos de una vez por semana)</span></label>
-            <label><input type="radio" name="frecuencia" value="No las utilizo"><span>No las utilizo</span></label>
-          </div>
-          <div class="error-msg">Selecciona una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q7 (antes Q6) -->
-      <div class="card">
-        <div class="q" id="q-tiempo">
-          <p class="q-title"><span class="q-num">7</span>¿Cuánto tiempo dedicas por jornada a tareas con apoyo de IA?</p>
-          <div class="options" data-name="tiempoDedicado">
-            <label><input type="radio" name="tiempoDedicado" value="Menos de 30 minutos"><span>Menos de 30 minutos</span></label>
-            <label><input type="radio" name="tiempoDedicado" value="Entre 30 minutos y 1 hora"><span>Entre 30 minutos y 1 hora</span></label>
-            <label><input type="radio" name="tiempoDedicado" value="Entre 1 y 2 horas"><span>Entre 1 y 2 horas</span></label>
-            <label><input type="radio" name="tiempoDedicado" value="Más de 2 horas"><span>Más de 2 horas</span></label>
-            <label><input type="radio" name="tiempoDedicado" value="No aplica / no uso IA"><span>No aplica / no uso IA</span></label>
-          </div>
-          <div class="error-msg">Selecciona una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q8 (antes Q7) -->
-      <div class="card">
-        <div class="q" id="q-cuenta">
-          <p class="q-title"><span class="q-num">8</span>¿Qué tipo de cuenta utilizas hoy para acceder a herramientas de IA?</p>
-          <div class="options" data-name="tipoCuenta">
-            <label><input type="radio" name="tipoCuenta" value="Cuenta personal gratuita"><span>Cuenta personal gratuita</span></label>
-            <label><input type="radio" name="tipoCuenta" value="Cuenta personal pagada (suscripción propia)"><span>Cuenta personal pagada (suscripción propia)</span></label>
-            <label><input type="radio" name="tipoCuenta" value="Cuenta corporativa o licencia de la empresa"><span>Cuenta corporativa o licencia de la empresa</span></label>
-            <label><input type="radio" name="tipoCuenta" value="Otra" data-otro-trigger="cuenta-otro"><span>Otra</span></label>
-            <label><input type="radio" name="tipoCuenta" value="No tengo cuenta / no la uso"><span>No tengo cuenta / no la uso</span></label>
-          </div>
-          <div class="otro-input" id="cuenta-otro-wrap">
-            <input type="text" id="cuenta-otro" placeholder="Indica cuál">
-          </div>
-          <div class="error-msg">Selecciona una opción.</div>
-        </div>
-      </div>
-
-      <!-- Q9 (antes Q8) -->
-      <div class="card">
-        <div class="q" id="q-utilidad">
-          <p class="q-title"><span class="q-num">9</span>¿Qué tan útil sería para tu trabajo contar con cuentas corporativas (enterprise) de IA, con mayor seguridad, soporte y capacitación?</p>
-          <div class="options" data-name="utilidad">
-            <label><input type="radio" name="utilidad" value="Muy útil"><span>Muy útil</span></label>
-            <label><input type="radio" name="utilidad" value="Útil"><span>Útil</span></label>
-            <label><input type="radio" name="utilidad" value="Algo útil"><span>Algo útil</span></label>
-            <label><input type="radio" name="utilidad" value="Poco útil"><span>Poco útil</span></label>
-            <label><input type="radio" name="utilidad" value="No la necesito"><span>No la necesito</span></label>
-          </div>
-          <div class="error-msg">Selecciona una opción.</div>
-        </div>
-      </div>
-
-      <div class="card">
-        <div class="actions">
-          <button type="submit" class="btn btn-yellow" id="submitBtn">Enviar respuestas</button>
-        </div>
-      </div>
-
-    </form>
-
-    <div id="thanksCard" class="card hidden">
-      <h2>¡Gracias!</h2>
-      <p class="lead">Tu respuesta fue registrada correctamente. La información se analizará de
-      forma agregada junto con la de tus compañeros para definir la estrategia de IA del Grupo.</p>
-    </div>
-
-  </section>
-
-  <!-- ===================== VISTA: ADMIN ===================== -->
-  <section id="adminView" class="hidden">
-
-    <div class="card" id="loginCard">
-      <h1>Acceso administrador</h1>
-      <p class="small">Panel privado para revisar resultados agregados y respuestas individuales.</p>
-      <div class="q">
-        <p class="q-title">Usuario</p>
-        <input type="text" id="adminUser" autocomplete="username">
-      </div>
-      <div class="q">
-        <p class="q-title">Clave</p>
-        <input type="password" id="adminPass" autocomplete="current-password">
-      </div>
-      <div id="loginError" class="error-msg" style="margin-bottom:10px;"></div>
-      <div class="actions">
-        <button class="btn btn-yellow" id="loginBtn" type="button">Ingresar</button>
-        <button class="btn btn-secondary" id="backToSurveyBtn1" type="button">Volver a la encuesta</button>
-      </div>
-    </div>
-
-    <div id="adminPanel" class="hidden">
-
-      <div class="card">
-        <h1>Panel de resultados</h1>
-        <p class="small">Las respuestas se almacenan en Google Sheets. Usa "Actualizar datos" para
-        traer las respuestas más recientes.</p>
-        <div id="adminBanner"></div>
-        <div class="actions">
-          <button class="btn btn-yellow" id="loadDataBtn" type="button">Actualizar datos</button>
-          <button class="btn btn-secondary" id="exportCsvBtn" type="button">Exportar CSV</button>
-          <button class="btn btn-secondary" id="logoutBtn" type="button">Cerrar sesión</button>
-          <button class="btn btn-secondary" id="backToSurveyBtn2" type="button">Volver a la encuesta</button>
-        </div>
-      </div>
-
-      <div class="card" id="statsCard" class="hidden">
-        <h2>Resumen agregado <span id="totalCount" class="small"></span></h2>
-        <div class="stats-grid" id="statsGrid"></div>
-      </div>
-
-      <div class="card">
-        <h2>Respuestas individuales</h2>
-        <div class="table-wrap">
-          <table id="dataTable">
-            <thead><tr id="dataTableHead"></tr></thead>
-            <tbody id="dataTableBody"></tbody>
-          </table>
-        </div>
-      </div>
-
-    </div>
-
-  </section>
-
-</main>
-
-<footer>
-  Diagnóstico de Uso de IA · Grupo Boytec · Operaciones Perú
-</footer>
-
-<script>
-/* ============================================================
-   CONFIGURACIÓN
-   ============================================================ */
-// Reemplaza esta URL por la del Web App de Apps Script (ver README).
-const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwzgZGtA-DAOzc0ld4N90cSejx42w85ZpcWk0j7qkJzLkOmkSlOlealvpWPnO9d5dE2yA/exec";
-// Debe coincidir con la constante ADMIN_KEY del Apps Script.
-const ADMIN_KEY = "boytec2026";
-
-const ADMIN_USER = "miguel.arenas";
-const ADMIN_PASS = "admin123";
-
-// Dominios de correo personales no permitidos
-const BLOCKED_DOMAINS = [
-  "gmail.com","hotmail.com","outlook.com","yahoo.com","yahoo.es",
-  "icloud.com","live.com","msn.com","proton.me","protonmail.com",
-  "hotmail.es","outlook.es"
+const HEADERS = [
+  "Timestamp",
+  "Correo",
+  "Empresa",
+  "Empresa_Otro",
+  "Area",
+  "Area_Otro",
+  "Conectividad",
+  "Herramientas",
+  "Herramientas_Otro",
+  "Tareas",
+  "Tareas_Otro",
+  "Frecuencia",
+  "Tiempo_Dedicado",
+  "Tipo_Cuenta",
+  "Tipo_Cuenta_Otro",
+  "Utilidad_Enterprise"
 ];
 
-const LOCAL_KEY = "boytec_ia_encuesta_respuestas_peru_v1";
-
-/* ============================================================
-   UTILIDADES
-   ============================================================ */
-function $(sel, ctx){ return (ctx||document).querySelector(sel); }
-function $all(sel, ctx){ return Array.from((ctx||document).querySelectorAll(sel)); }
-
-function isValidCorporateEmail(value){
-  const v = (value||"").trim().toLowerCase();
-  const re = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
-  if(!re.test(v)) return false;
-  const domain = v.split("@")[1];
-  if(BLOCKED_DOMAINS.includes(domain)) return false;
-  return true;
+function getOrCreateSheet_() {
+  const ss = SpreadsheetApp.getActiveSpreadsheet();
+  let sheet = ss.getSheetByName(SHEET_NAME);
+  if (!sheet) {
+    sheet = ss.insertSheet(SHEET_NAME);
+  }
+  if (sheet.getLastRow() === 0) {
+    sheet.appendRow(HEADERS);
+    sheet.setFrozenRows(1);
+  }
+  return sheet;
 }
 
-/* ============================================================
-   TOGGLE "OTRO" — mostrar campo de texto libre sólo si se
-   selecciona la opción correspondiente
-   ============================================================ */
-$all("[data-otro-trigger]").forEach(function(input){
-  input.addEventListener("change", function(){
-    const wrap = document.getElementById(input.dataset.otroTrigger + "-wrap");
-    if(!wrap) return;
-    if(input.type === "radio"){
-      wrap.classList.toggle("show", input.checked);
-    } else { // checkbox
-      wrap.classList.toggle("show", input.checked);
-    }
-    if(!wrap.classList.contains("show")){
-      const txt = wrap.querySelector("input[type=text]");
-      if(txt) txt.value = "";
-    }
-  });
-});
+/**
+ * Recibe el envío del formulario (POST con JSON en el cuerpo).
+ */
+function doPost(e) {
+  try {
+    const sheet = getOrCreateSheet_();
+    const data = JSON.parse(e.postData.contents);
 
-// Para radios: cuando cambia cualquier radio del grupo, ocultar el campo
-// "otro" si el seleccionado ya no es la opción "otro".
-$all('.options').forEach(function(group){
-  const radios = group.querySelectorAll('input[type=radio]');
-  if(radios.length > 0){
-    radios.forEach(function(r){
-      r.addEventListener("change", function(){
-        const trigger = r.dataset.otroTrigger;
-        if(!trigger) return;
-        // Ocultar todos los wrappers de "otro" del grupo
-        const wrapperId = group.dataset.name + "-otro-wrap";
-        const wrap = document.getElementById(wrapperId);
-        if(wrap){
-          wrap.classList.toggle("show", r.dataset.otroTrigger ? r.checked : false);
-          if(!wrap.classList.contains("show")){
-            const txt = wrap.querySelector("input[type=text]");
-            if(txt) txt.value = "";
-          }
-        }
-      });
-    });
+    sheet.appendRow([
+      data.timestamp ? new Date(data.timestamp) : new Date(),
+      data.correo || "",
+      data.empresa || "",
+      data.empresa_otro || "",
+      data.area || "",
+      data.area_otro || "",
+      data.conectividad || "",
+      Array.isArray(data.herramientas) ? data.herramientas.join(", ") : (data.herramientas || ""),
+      data.herramientas_otro || "",
+      Array.isArray(data.tareas) ? data.tareas.join(", ") : (data.tareas || ""),
+      data.tareas_otro || "",
+      data.frecuencia || "",
+      data.tiempoDedicado || "",
+      data.tipoCuenta || "",
+      data.tipo_cuenta_otro || "",
+      data.utilidad || ""
+    ]);
+
+    const output = ContentService
+      .createTextOutput(JSON.stringify({ result: "success" }))
+      .setMimeType(ContentService.MimeType.JSON);
+    
+    output.addHeader("Access-Control-Allow-Origin", "*");
+    output.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    output.addHeader("Access-Control-Allow-Headers", "Content-Type");
+    
+    return output;
+
+  } catch (err) {
+    const output = ContentService
+      .createTextOutput(JSON.stringify({ result: "error", message: String(err) }))
+      .setMimeType(ContentService.MimeType.JSON);
+    
+    output.addHeader("Access-Control-Allow-Origin", "*");
+    output.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+    output.addHeader("Access-Control-Allow-Headers", "Content-Type");
+    
+    return output;
   }
-});
+}
 
-/* ============================================================
-   MANEJO DE CHECKBOXES MUTUAMENTE EXCLUYENTES
-   ============================================================ */
-$all('[data-exclusive="true"]').forEach(function(checkbox){
-  checkbox.addEventListener("change", function(){
-    if(!this.checked) return;
-    const group = this.closest(".options");
-    if(!group) return;
-    const other = group.querySelectorAll('input[type=checkbox]:not([data-exclusive])');
-    other.forEach(function(cb){
-      cb.checked = false;
-      const wrap = document.getElementById(cb.dataset.otroTrigger + "-wrap");
-      if(wrap) wrap.classList.remove("show");
-    });
-  });
-});
+/**
+ * Entrega todas las filas (encabezados + datos) al panel admin.
+ * Soporta JSONP (?callback=...) para evitar problemas de CORS desde
+ * GitHub Pages, y exige ?key=ADMIN_KEY.
+ */
+function doGet(e) {
+  const callback = e.parameter.callback;
+  const key = e.parameter.key;
 
-$all('input[type=checkbox]:not([data-exclusive="true"])').forEach(function(checkbox){
-  checkbox.addEventListener("change", function(){
-    if(!this.checked) return;
-    const group = this.closest(".options");
-    if(!group) return;
-    const exclusive = group.querySelector('[data-exclusive="true"]');
-    if(exclusive) exclusive.checked = false;
-  });
-});
+  let payload;
 
-/* ============================================================
-   VALIDACIÓN Y ENVÍO
-   ============================================================ */
-const form = $("#surveyForm");
-const formBanner = $("#formBanner");
-const thanksCard = $("#thanksCard");
-const surveyView = $("#surveyView");
-
-form.addEventListener("submit", function(e){
-  e.preventDefault();
-
-  // Limpiar mensajes de error previos
-  $all(".q.has-error").forEach(function(q){ q.classList.remove("has-error"); });
-  $all(".error-msg.show").forEach(function(m){ m.classList.remove("show"); });
-
-  // Validar cada pregunta
-  let valid = true;
-  const data = {};
-
-  // Email
-  const correo = $("#correo").value.trim();
-  if(!isValidCorporateEmail(correo)){
-    $("#q-email").classList.add("has-error");
-    $("#q-email .error-msg").classList.add("show");
-    valid = false;
+  if (key !== ADMIN_KEY) {
+    payload = { error: "unauthorized" };
   } else {
-    data.correo = correo;
+    const sheet = getOrCreateSheet_();
+    const values = sheet.getDataRange().getValues();
+    payload = { result: "success", data: values };
   }
 
-  // Radios y checkboxes
-  const questions = [
-    {name: "empresa", type: "radio", el: "#q-empresa"},
-    {name: "area", type: "radio", el: "#q-area"},
-    {name: "conectividad", type: "radio", el: "#q-conectividad"},
-    {name: "herramientas", type: "checkbox", el: "#q-herramientas"},
-    {name: "tareas", type: "checkbox", el: "#q-tareas"},
-    {name: "frecuencia", type: "radio", el: "#q-frecuencia"},
-    {name: "tiempoDedicado", type: "radio", el: "#q-tiempo"},
-    {name: "tipoCuenta", type: "radio", el: "#q-cuenta"},
-    {name: "utilidad", type: "radio", el: "#q-utilidad"}
-  ];
+  const json = JSON.stringify(payload);
 
-  questions.forEach(function(q){
-    const inputs = $all('input[name="' + q.name + '"]');
-    let selected = [];
-    inputs.forEach(function(inp){
-      if(inp.checked) selected.push(inp.value);
-    });
-
-    if(selected.length === 0){
-      $(q.el).classList.add("has-error");
-      $(q.el + " .error-msg").classList.add("show");
-      valid = false;
-    } else {
-      if(q.type === "radio"){
-        data[q.name] = selected[0];
-      } else {
-        data[q.name] = selected;
-      }
-    }
-  });
-
-  // Campos "otro"
-  const campos_otro = ["empresa-otro", "area-otro", "herramientas-otro", "tareas-otro", "cuenta-otro"];
-  campos_otro.forEach(function(id){
-    const wrap = document.getElementById(id + "-wrap");
-    if(wrap && wrap.classList.contains("show")){
-      const val = $("#" + id).value.trim();
-      if(val){
-        data[id.replace("-", "_")] = val;
-      }
-    }
-  });
-
-  if(!valid){
-    formBanner.innerHTML = '<div class="banner error">Por favor, completa todos los campos obligatorios.</div>';
-    form.scrollIntoView({behavior:"smooth"});
-    return;
+  if (callback) {
+    return ContentService
+      .createTextOutput(callback + "(" + json + ")")
+      .setMimeType(ContentService.MimeType.JAVASCRIPT);
   }
 
-  // Intentar enviar
-  data.timestamp = new Date().toISOString();
-  submitToSheet(data);
-});
-
-function submitToSheet(data){
-  formBanner.innerHTML = '<div class="banner ok">Enviando respuestas...</div>';
-
-  if(!SCRIPT_URL || SCRIPT_URL.indexOf("http") !== 0){
-    // Guardar localmente
-    let local = [];
-    try{ local = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); }catch(e){}
-    local.push(data);
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(local));
-    showThanks();
-    return;
-  }
-
-  fetch(SCRIPT_URL, {
-    method: "POST",
-    body: JSON.stringify(data),
-    headers:{"Content-Type":"application/json"}
-  })
-  .then(r => r.json())
-  .then(j => {
-    if(j.result === "success"){
-      // También guardar localmente como respaldo
-      let local = [];
-      try{ local = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); }catch(e){}
-      local.push(data);
-      localStorage.setItem(LOCAL_KEY, JSON.stringify(local));
-      showThanks();
-    } else {
-      formBanner.innerHTML = '<div class="banner error">Error al enviar. Intenta nuevamente.</div>';
-    }
-  })
-  .catch(err => {
-    formBanner.innerHTML = '<div class="banner error">No se pudo conectar. Respuesta guardada localmente.</div>';
-    let local = [];
-    try{ local = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); }catch(e){}
-    local.push(data);
-    localStorage.setItem(LOCAL_KEY, JSON.stringify(local));
-  });
+  return ContentService
+    .createTextOutput(json)
+    .setMimeType(ContentService.MimeType.JSON);
 }
 
-function showThanks(){
-  form.classList.add("hidden");
-  thanksCard.classList.remove("hidden");
-  formBanner.innerHTML = '';
+/**
+ * Maneja preflight CORS desde navegadores.
+ */
+function doOptions(e) {
+  const output = ContentService.createTextOutput("");
+  output.addHeader("Access-Control-Allow-Origin", "*");
+  output.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
+  output.addHeader("Access-Control-Allow-Headers", "Content-Type");
+  return output;
 }
-
-/* ============================================================
-   PANEL ADMINISTRADOR
-   ============================================================ */
-document.getElementById("toggleAdminBtn").addEventListener("click", function(){
-  document.getElementById("adminView").classList.remove("hidden");
-  document.getElementById("surveyView").classList.add("hidden");
-  document.getElementById("loginCard").classList.remove("hidden");
-  document.getElementById("adminPanel").classList.add("hidden");
-});
-
-$all("#backToSurveyBtn1, #backToSurveyBtn2").forEach(function(btn){
-  btn.addEventListener("click", function(){
-    document.getElementById("adminView").classList.add("hidden");
-    document.getElementById("surveyView").classList.remove("hidden");
-  });
-});
-
-document.getElementById("loginBtn").addEventListener("click", function(){
-  const user = $("#adminUser").value.trim();
-  const pass = $("#adminPass").value.trim();
-  const err = $("#loginError");
-  err.textContent = "";
-
-  if(!user || !pass){
-    err.textContent = "Ingresa usuario y clave.";
-    err.classList.add("show");
-    return;
-  }
-
-  if(user === ADMIN_USER && pass === ADMIN_PASS){
-    sessionStorage.setItem("boytec_admin_logged", "true");
-    document.getElementById("loginCard").classList.add("hidden");
-    document.getElementById("adminPanel").classList.remove("hidden");
-    loadDataFromSheet();
-  } else {
-    err.textContent = "Usuario o clave incorrectos.";
-    err.classList.add("show");
-  }
-});
-
-if(sessionStorage.getItem("boytec_admin_logged") === "true"){
-  document.getElementById("loginCard").classList.add("hidden");
-  document.getElementById("adminPanel").classList.remove("hidden");
-}
-
-document.getElementById("logoutBtn").addEventListener("click", function(){
-  sessionStorage.removeItem("boytec_admin_logged");
-  document.getElementById("adminPanel").classList.add("hidden");
-  document.getElementById("loginCard").classList.remove("hidden");
-  $("#adminUser").value = "";
-  $("#adminPass").value = "";
-});
-
-/* ============================================================
-   CARGA DE DATOS DESDE GOOGLE SHEET (vía JSONP, evita problemas de CORS)
-   ============================================================ */
-let lastData = null;
-
-document.getElementById("loadDataBtn").addEventListener("click", function(){
-  loadDataFromSheet();
-});
-
-function loadDataFromSheet(){
-  const banner = document.getElementById("adminBanner");
-  banner.innerHTML = '<div class="banner ok">Cargando datos...</div>';
-
-  if(!SCRIPT_URL || SCRIPT_URL.indexOf("http") !== 0){
-    banner.innerHTML = '<div class="banner ok">Mostrando respuestas guardadas en este dispositivo.</div>';
-    renderLocalOnly();
-    return;
-  }
-
-  const callbackName = "boytecCb_" + Date.now();
-  window[callbackName] = function(resp){
-    delete window[callbackName];
-    script.remove();
-    if(resp && resp.error){
-      banner.innerHTML = '<div class="banner error">No se pudo autenticar con la hoja de cálculo.</div>';
-      renderLocalOnly();
-      return;
-    }
-    if(resp && resp.result === "success" && Array.isArray(resp.data) && resp.data.length > 0){
-      const headers = resp.data[0];
-      const rows = resp.data.slice(1);
-      lastData = {headers: headers, rows: rows};
-      banner.innerHTML = '<div class="banner ok">Datos actualizados: ' + rows.length + ' respuesta(s).</div>';
-      renderTable(headers, rows);
-      renderStats(headers, rows);
-    } else {
-      banner.innerHTML = '<div class="banner ok">La hoja aún no tiene respuestas registradas.</div>';
-      lastData = {headers: [], rows: []};
-      renderTable([], []);
-      renderStats([], []);
-    }
-  };
-
-  const script = document.createElement("script");
-  script.src = SCRIPT_URL + "?key=" + encodeURIComponent(ADMIN_KEY) + "&callback=" + callbackName;
-  script.onerror = function(){
-    banner.innerHTML = '<div class="banner error">No se pudo conectar con Google Sheets.</div>';
-    delete window[callbackName];
-    renderLocalOnly();
-  };
-  document.body.appendChild(script);
-}
-
-function renderLocalOnly(){
-  let local = [];
-  try{ local = JSON.parse(localStorage.getItem(LOCAL_KEY) || "[]"); }catch(e){}
-  if(local.length === 0){
-    renderTable([], []);
-    renderStats([], []);
-    return;
-  }
-  const headers = ["Timestamp","Correo","Empresa","Empresa_Otro","Area","Area_Otro","Conectividad","Herramientas","Herramientas_Otro","Tareas","Tareas_Otro","Frecuencia","Tiempo_Dedicado","Tipo_Cuenta","Tipo_Cuenta_Otro","Utilidad"];
-  const rows = local.map(function(p){
-    return [
-      p.timestamp, p.correo, p.empresa, p.empresa_otro || "",
-      p.area || "", p.area_otro || "",
-      p.conectividad || "",
-      (p.herramientas||[]).join(", "), p.herramientas_otro || "",
-      (p.tareas||[]).join(", "), p.tareas_otro || "",
-      p.frecuencia, p.tiempoDedicado, p.tipoCuenta, p.tipo_cuenta_otro || "",
-      p.utilidad
-    ];
-  });
-  lastData = {headers: headers, rows: rows};
-  renderTable(headers, rows);
-  renderStats(headers, rows);
-}
-
-function escapeHtml(str){
-  return String(str == null ? "" : str)
-    .replace(/&/g,"&amp;")
-    .replace(/</g,"&lt;")
-    .replace(/>/g,"&gt;")
-    .replace(/"/g,"&quot;");
-}
-
-function renderTable(headers, rows){
-  const head = document.getElementById("dataTableHead");
-  const body = document.getElementById("dataTableBody");
-  head.innerHTML = "";
-  body.innerHTML = "";
-  document.getElementById("totalCount").textContent = "(" + rows.length + " respuestas)";
-
-  if(headers.length === 0){
-    head.innerHTML = "<th>Sin datos</th>";
-    return;
-  }
-  headers.forEach(function(h){
-    const th = document.createElement("th");
-    th.textContent = h;
-    head.appendChild(th);
-  });
-  rows.forEach(function(row){
-    const tr = document.createElement("tr");
-    row.forEach(function(cell){
-      const td = document.createElement("td");
-      if(cell instanceof Date){
-        td.textContent = cell.toLocaleString("es-PE");
-      } else {
-        td.textContent = cell == null ? "" : String(cell);
-      }
-      tr.appendChild(td);
-    });
-    body.appendChild(tr);
-  });
-}
-
-/* ============================================================
-   ESTADÍSTICAS AGREGADAS
-   ============================================================ */
-function colIndex(headers, name){
-  return headers.indexOf(name);
-}
-
-function countMultiValueColumn(rows, idx){
-  const counts = {};
-  rows.forEach(function(row){
-    const raw = row[idx];
-    if(!raw) return;
-    String(raw).split(",").map(function(s){return s.trim();}).filter(Boolean).forEach(function(v){
-      counts[v] = (counts[v]||0) + 1;
-    });
-  });
-  return counts;
-}
-
-function countSingleValueColumn(rows, idx){
-  const counts = {};
-  rows.forEach(function(row){
-    const v = row[idx];
-    if(!v) return;
-    counts[v] = (counts[v]||0) + 1;
-  });
-  return counts;
-}
-
-function renderBarBox(title, counts, total){
-  const box = document.createElement("div");
-  box.className = "stat-box";
-  const h3 = document.createElement("h3");
-  h3.textContent = title;
-  box.appendChild(h3);
-
-  const entries = Object.entries(counts).sort(function(a,b){ return b[1]-a[1]; });
-  if(entries.length === 0){
-    const p = document.createElement("p");
-    p.className = "small";
-    p.textContent = "Sin datos.";
-    box.appendChild(p);
-    return box;
-  }
-  const max = Math.max.apply(null, entries.map(function(e){return e[1];}));
-  entries.forEach(function(e){
-    const row = document.createElement("div");
-    row.className = "bar-row";
-    const label = document.createElement("div");
-    label.className = "bar-label";
-    label.textContent = e[0];
-    const track = document.createElement("div");
-    track.className = "bar-track";
-    const fill = document.createElement("div");
-    fill.className = "bar-fill";
-    fill.style.width = (max ? (e[1]/max*100) : 0) + "%";
-    track.appendChild(fill);
-    const count = document.createElement("div");
-    count.className = "bar-count";
-    count.textContent = e[1];
-    row.appendChild(label);
-    row.appendChild(track);
-    row.appendChild(count);
-    box.appendChild(row);
-  });
-  return box;
-}
-
-function renderStats(headers, rows){
-  const grid = document.getElementById("statsGrid");
-  grid.innerHTML = "";
-  if(rows.length === 0) return;
-
-  const idxEmpresa = colIndex(headers, "Empresa");
-  const idxArea = colIndex(headers, "Area");
-  const idxConectividad = colIndex(headers, "Conectividad");
-  const idxHerr = colIndex(headers, "Herramientas");
-  const idxTareas = colIndex(headers, "Tareas");
-  const idxFrec = colIndex(headers, "Frecuencia");
-  const idxTiempo = colIndex(headers, "Tiempo_Dedicado");
-  const idxCuenta = colIndex(headers, "Tipo_Cuenta");
-  const idxUtil = colIndex(headers, "Utilidad");
-
-  if(idxEmpresa >= 0) grid.appendChild(renderBarBox("Por empresa", countSingleValueColumn(rows, idxEmpresa), rows.length));
-  if(idxArea >= 0) grid.appendChild(renderBarBox("Por área", countSingleValueColumn(rows, idxArea), rows.length));
-  if(idxConectividad >= 0) grid.appendChild(renderBarBox("Acceso a conectividad cloud", countSingleValueColumn(rows, idxConectividad), rows.length));
-  if(idxHerr >= 0) grid.appendChild(renderBarBox("Herramientas usadas", countMultiValueColumn(rows, idxHerr), rows.length));
-  if(idxTareas >= 0) grid.appendChild(renderBarBox("Tipo de tareas", countMultiValueColumn(rows, idxTareas), rows.length));
-  if(idxFrec >= 0) grid.appendChild(renderBarBox("Frecuencia de uso", countSingleValueColumn(rows, idxFrec), rows.length));
-  if(idxTiempo >= 0) grid.appendChild(renderBarBox("Tiempo dedicado / día", countSingleValueColumn(rows, idxTiempo), rows.length));
-  if(idxCuenta >= 0) grid.appendChild(renderBarBox("Tipo de cuenta usada", countSingleValueColumn(rows, idxCuenta), rows.length));
-  if(idxUtil >= 0) grid.appendChild(renderBarBox("Utilidad de cuentas enterprise", countSingleValueColumn(rows, idxUtil), rows.length));
-}
-
-/* ============================================================
-   EXPORTAR CSV
-   ============================================================ */
-document.getElementById("exportCsvBtn").addEventListener("click", function(){
-  if(!lastData || !lastData.headers || lastData.headers.length === 0){
-    alert("Primero presiona 'Actualizar datos'.");
-    return;
-  }
-  const rows = [lastData.headers].concat(lastData.rows.map(function(r){
-    return r.map(function(c){
-      if(c instanceof Date) return c.toISOString();
-      return c == null ? "" : String(c);
-    });
-  }));
-  const csv = rows.map(function(row){
-    return row.map(function(cell){
-      const s = String(cell).replace(/"/g,'""');
-      return '"' + s + '"';
-    }).join(",");
-  }).join("\r\n");
-
-  const blob = new Blob(["\uFEFF" + csv], {type:"text/csv;charset=utf-8;"});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement("a");
-  a.href = url;
-  a.download = "diagnostico_ia_peru_" + new Date().toISOString().slice(0,10) + ".csv";
-  document.body.appendChild(a);
-  a.click();
-  document.body.removeChild(a);
-  URL.revokeObjectURL(url);
-});
-
-</script>
-</body>
-</html>
