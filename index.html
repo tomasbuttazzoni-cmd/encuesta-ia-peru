@@ -1,141 +1,62 @@
-/**
- * APPS SCRIPT — Diagnóstico de Uso de IA, Grupo Boytec — PERÚ
- * ----------------------------------------------------------
- * Este código se pega en el editor de Apps Script vinculado a un
- * Google Sheet (Extensiones > Apps Script). Crea automáticamente la
- * hoja "Respuestas" con encabezados, registra cada envío del
- * formulario (doPost) y entrega todos los datos al panel admin
- * (doGet, vía JSONP) protegidos por una clave compartida.
- *
- * IMPORTANTE: ADMIN_KEY debe coincidir EXACTAMENTE con la constante
- * ADMIN_KEY definida en index-peru.html.
- */
-
-const SHEET_NAME = "Respuestas";
-const ADMIN_KEY = "boytec2026"; // <-- cámbiala si quieres mayor seguridad,
-                                 //     y actualiza también index-peru.html
-
-const HEADERS = [
-  "Timestamp",
-  "Correo",
-  "Empresa",
-  "Empresa_Otro",
-  "Area",
-  "Area_Otro",
-  "Conectividad",
-  "Herramientas",
-  "Herramientas_Otro",
-  "Tareas",
-  "Tareas_Otro",
-  "Frecuencia",
-  "Tiempo_Dedicado",
-  "Tipo_Cuenta",
-  "Tipo_Cuenta_Otro",
-  "Utilidad_Enterprise"
-];
-
-function getOrCreateSheet_() {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sheet = ss.getSheetByName(SHEET_NAME);
-  if (!sheet) {
-    sheet = ss.insertSheet(SHEET_NAME);
-  }
-  if (sheet.getLastRow() === 0) {
-    sheet.appendRow(HEADERS);
-    sheet.setFrozenRows(1);
-  }
-  return sheet;
-}
-
-/**
- * Recibe el envío del formulario (POST con JSON en el cuerpo).
- */
-function doPost(e) {
-  try {
-    const sheet = getOrCreateSheet_();
-    const data = JSON.parse(e.postData.contents);
-
-    sheet.appendRow([
-      data.timestamp ? new Date(data.timestamp) : new Date(),
-      data.correo || "",
-      data.empresa || "",
-      data.empresa_otro || "",
-      data.area || "",
-      data.area_otro || "",
-      data.conectividad || "",
-      Array.isArray(data.herramientas) ? data.herramientas.join(", ") : (data.herramientas || ""),
-      data.herramientas_otro || "",
-      Array.isArray(data.tareas) ? data.tareas.join(", ") : (data.tareas || ""),
-      data.tareas_otro || "",
-      data.frecuencia || "",
-      data.tiempoDedicado || "",
-      data.tipoCuenta || "",
-      data.tipo_cuenta_otro || "",
-      data.utilidad || ""
-    ]);
-
-    const output = ContentService
-      .createTextOutput(JSON.stringify({ result: "success" }))
-      .setMimeType(ContentService.MimeType.JSON);
+<script>
+    // Mostrar/ocultar campos condicionales
+    document.getElementById('empresa').addEventListener('change', function() {
+        document.getElementById('empresaOtroGroup').style.display = this.value === 'Otra' ? 'block' : 'none';
+    });
     
-    output.addHeader("Access-Control-Allow-Origin", "*");
-    output.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-    output.addHeader("Access-Control-Allow-Headers", "Content-Type");
+    document.getElementById('area').addEventListener('change', function() {
+        document.getElementById('areaOtroGroup').style.display = this.value === 'Otra' ? 'block' : 'none';
+    });
     
-    return output;
-
-  } catch (err) {
-    const output = ContentService
-      .createTextOutput(JSON.stringify({ result: "error", message: String(err) }))
-      .setMimeType(ContentService.MimeType.JSON);
+    document.getElementById('herramientasOtra').addEventListener('change', function() {
+        document.getElementById('herramientasOtroGroup').style.display = this.checked ? 'block' : 'none';
+    });
     
-    output.addHeader("Access-Control-Allow-Origin", "*");
-    output.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-    output.addHeader("Access-Control-Allow-Headers", "Content-Type");
+    document.getElementById('tareasOtra').addEventListener('change', function() {
+        document.getElementById('tareasOtroGroup').style.display = this.checked ? 'block' : 'none';
+    });
     
-    return output;
-  }
-}
-
-/**
- * Entrega todas las filas (encabezados + datos) al panel admin.
- * Soporta JSONP (?callback=...) para evitar problemas de CORS desde
- * GitHub Pages, y exige ?key=ADMIN_KEY.
- */
-function doGet(e) {
-  const callback = e.parameter.callback;
-  const key = e.parameter.key;
-
-  let payload;
-
-  if (key !== ADMIN_KEY) {
-    payload = { error: "unauthorized" };
-  } else {
-    const sheet = getOrCreateSheet_();
-    const values = sheet.getDataRange().getValues();
-    payload = { result: "success", data: values };
-  }
-
-  const json = JSON.stringify(payload);
-
-  if (callback) {
-    return ContentService
-      .createTextOutput(callback + "(" + json + ")")
-      .setMimeType(ContentService.MimeType.JAVASCRIPT);
-  }
-
-  return ContentService
-    .createTextOutput(json)
-    .setMimeType(ContentService.MimeType.JSON);
-}
-
-/**
- * Maneja preflight CORS desde navegadores.
- */
-function doOptions(e) {
-  const output = ContentService.createTextOutput("");
-  output.addHeader("Access-Control-Allow-Origin", "*");
-  output.addHeader("Access-Control-Allow-Methods", "POST, GET, OPTIONS");
-  output.addHeader("Access-Control-Allow-Headers", "Content-Type");
-  return output;
-}
+    document.querySelector('input[name="tipoCuenta"][value="Otra"]').addEventListener('change', function() {
+        document.getElementById('tipoCuentaOtroGroup').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    // Enviar formulario SIN FETCH (form submission puro)
+    document.getElementById('encuestaForm').addEventListener('submit', function(e) {
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+        
+        // El formulario se enviará automáticamente al Apps Script
+        // Mostrar mensaje de éxito después de 2 segundos
+        setTimeout(() => {
+            showMessage('Respuesta guardada correctamente', 'success');
+            document.getElementById('encuestaForm').reset();
+            document.getElementById('timestamp').value = new Date().toISOString();
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar Respuesta';
+            
+            // Ocultar campos condicionales
+            document.getElementById('empresaOtroGroup').style.display = 'none';
+            document.getElementById('areaOtroGroup').style.display = 'none';
+            document.getElementById('herramientasOtroGroup').style.display = 'none';
+            document.getElementById('tareasOtroGroup').style.display = 'none';
+            document.getElementById('tipoCuentaOtroGroup').style.display = 'none';
+        }, 2000);
+    });
+    
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = 'message ' + type;
+        
+        // Auto-ocultar después de 5 segundos
+        setTimeout(() => {
+            messageDiv.className = 'message';
+        }, 5000);
+    }
+    
+    // Establecer timestamp y action al cargar
+    document.getElementById('timestamp').value = new Date().toISOString();
+    document.getElementById('encuestaForm').action = 'https://script.google.com/macros/s/AKfycbwzgZGtA-DAOzc0ld4N90cSejx42w85ZpcWk0j7qkJzLkOmkSlOlealvpWPnO9d5dE2yA/exec';
+    document.getElementById('encuestaForm').method = 'POST';
+</script>
