@@ -1,3 +1,222 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Encuesta de Uso de IA - Grupo Boytec Perú</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 20px; font-size: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #0066cc; }
+        .checkbox-group, .radio-group { display: flex; flex-direction: column; gap: 10px; }
+        input[type="checkbox"], input[type="radio"] { width: auto; margin-right: 8px; }
+        .checkbox-item, .radio-item { display: flex; align-items: center; }
+        button { background: #0066cc; color: white; padding: 12px 24px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; width: 100%; }
+        button:hover { background: #0052a3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .message { margin: 20px 0; padding: 15px; border-radius: 4px; display: none; }
+        .message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .hidden { display: none; }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Diagnóstico de Uso de IA</h1>
+        <p style="color: #666; margin-bottom: 20px;">Grupo Boytec - Perú</p>
+        
+        <div id="message" class="message"></div>
+        
+        <form id="encuestaForm">
+            <input type="hidden" id="timestamp" name="timestamp">
+            
+            <div class="form-group">
+                <label for="correo">Correo electrónico *</label>
+                <input type="email" id="correo" name="correo" required>
+            </div>
+            
+            <div class="form-group">
+                <label for="empresa">Empresa *</label>
+                <select id="empresa" name="empresa" required>
+                    <option value="">Selecciona una empresa</option>
+                    <option value="Christensen Boyles Chile">Christensen Boyles Chile</option>
+                    <option value="Christensen Boyles Perú">Christensen Boyles Perú</option>
+                    <option value="Technosteel">Technosteel</option>
+                    <option value="UHCO">UHCO</option>
+                    <option value="Christensen Comercial">Christensen Comercial</option>
+                    <option value="MDF">MDF</option>
+                    <option value="CHRISCO">CHRISCO</option>
+                    <option value="Otra">Otra</option>
+                </select>
+            </div>
+            
+            <div id="empresaOtroGroup" class="form-group hidden">
+                <label for="empresaOtro">Especifica tu empresa</label>
+                <input type="text" id="empresaOtro" name="empresaOtro">
+            </div>
+            
+            <div class="form-group">
+                <label for="area">Área o departamento *</label>
+                <select id="area" name="area" required>
+                    <option value="">Selecciona un área</option>
+                    <option value="Operaciones">Operaciones</option>
+                    <option value="Comercial">Comercial</option>
+                    <option value="Finanzas">Finanzas</option>
+                    <option value="RRHH">RRHH</option>
+                    <option value="Tecnología">Tecnología</option>
+                    <option value="Otra">Otra</option>
+                </select>
+            </div>
+            
+            <div id="areaOtroGroup" class="form-group hidden">
+                <label for="areaOtro">Especifica tu área</label>
+                <input type="text" id="areaOtro" name="areaOtro">
+            </div>
+            
+            <div class="form-group">
+                <label>Conectividad a internet *</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="conectFijaAlta" name="conectividad" value="Fija de alta velocidad" required>
+                        <label for="conectFijaAlta">Fija de alta velocidad</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="conectFijaBaja" name="conectividad" value="Fija de baja velocidad">
+                        <label for="conectFijaBaja">Fija de baja velocidad</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="conectMovil" name="conectividad" value="Móvil">
+                        <label for="conectMovil">Móvil</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="form-group">
+                <label>Herramientas de IA que usas *</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="herramientaClaude" name="herramientas" value="Claude">
+                        <label for="herramientaClaude">Claude</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="herramientaChatGPT" name="herramientas" value="ChatGPT">
+                        <label for="herramientaChatGPT">ChatGPT</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="herramientaCopilot" name="herramientas" value="Microsoft Copilot">
+                        <label for="herramientaCopilot">Microsoft Copilot</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="herramientaGemini" name="herramientas" value="Google Gemini">
+                        <label for="herramientaGemini">Google Gemini</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="herramientasOtra" name="herramientas" value="Otra">
+                        <label for="herramientasOtra">Otra</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="herramientasOtroGroup" class="form-group hidden">
+                <label for="herramientasOtroText">¿Cuál otra herramienta?</label>
+                <input type="text" id="herramientasOtroText" name="herramientasOtroText">
+            </div>
+            
+            <div class="form-group">
+                <label>Tareas donde usas IA *</label>
+                <div class="checkbox-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tareaRedaccion" name="tareas" value="Redacción y generación de textos">
+                        <label for="tareaRedaccion">Redacción y generación de textos</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tareaAnalisis" name="tareas" value="Análisis de datos">
+                        <label for="tareaAnalisis">Análisis de datos</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tareaProgramacion" name="tareas" value="Programación">
+                        <label for="tareaProgramacion">Programación</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tareaIdiomas" name="tareas" value="Traducción e idiomas">
+                        <label for="tareaIdiomas">Traducción e idiomas</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="tareasOtra" name="tareas" value="Otra">
+                        <label for="tareasOtra">Otra</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tareasOtroGroup" class="form-group hidden">
+                <label for="tareasOtroText">¿Cuál otra tarea?</label>
+                <input type="text" id="tareasOtroText" name="tareasOtroText">
+            </div>
+            
+            <div class="form-group">
+                <label for="frecuencia">Frecuencia de uso *</label>
+                <select id="frecuencia" name="frecuencia" required>
+                    <option value="">Selecciona frecuencia</option>
+                    <option value="Diaria">Diaria</option>
+                    <option value="Varias veces a la semana">Varias veces a la semana</option>
+                    <option value="Una vez a la semana">Una vez a la semana</option>
+                    <option value="Ocasionalmente">Ocasionalmente</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="tiempoDedicado">Horas semanales dedicadas a IA *</label>
+                <input type="number" id="tiempoDedicado" name="tiempoDedicado" min="0" step="0.5" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo de cuenta que usas *</label>
+                <div class="radio-group">
+                    <div class="radio-item">
+                        <input type="radio" id="tipoCuentaGratuita" name="tipoCuenta" value="Gratuita" required>
+                        <label for="tipoCuentaGratuita">Gratuita</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="tipoCuentaPagada" name="tipoCuenta" value="Pagada">
+                        <label for="tipoCuentaPagada">Pagada</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="tipoCuentaEnterprise" name="tipoCuenta" value="Enterprise">
+                        <label for="tipoCuentaEnterprise">Enterprise (Grupo Boytec)</label>
+                    </div>
+                    <div class="radio-item">
+                        <input type="radio" id="tipoCuentaOtra" name="tipoCuenta" value="Otra">
+                        <label for="tipoCuentaOtra">Otra</label>
+                    </div>
+                </div>
+            </div>
+            
+            <div id="tipoCuentaOtroGroup" class="form-group hidden">
+                <label for="tipoCuentaOtroText">¿Cuál otra?</label>
+                <input type="text" id="tipoCuentaOtroText" name="tipoCuentaOtroText">
+            </div>
+            
+            <div class="form-group">
+                <label for="utilidad">¿Qué tan útil ha sido la IA en tu trabajo? (1-5) *</label>
+                <select id="utilidad" name="utilidad" required>
+                    <option value="">Selecciona</option>
+                    <option value="1">1 - Nada útil</option>
+                    <option value="2">2 - Poco útil</option>
+                    <option value="3">3 - Moderadamente útil</option>
+                    <option value="4">4 - Muy útil</option>
+                    <option value="5">5 - Extremadamente útil</option>
+                </select>
+            </div>
+            
+            <button type="submit" id="submitBtn">Enviar Respuesta</button>
+        </form>
+    </div>
+
 <script>
     // Mostrar/ocultar campos condicionales
     document.getElementById('empresa').addEventListener('change', function() {
@@ -16,19 +235,51 @@
         document.getElementById('tareasOtroGroup').style.display = this.checked ? 'block' : 'none';
     });
     
-    document.querySelector('input[name="tipoCuenta"][value="Otra"]').addEventListener('change', function() {
-        document.getElementById('tipoCuentaOtroGroup').style.display = this.checked ? 'block' : 'none';
-    });
+    // ARREGLADO: Verificar que el elemento existe antes de usar addEventListener
+    const tipoCuentaOtraInput = document.querySelector('input[name="tipoCuenta"][value="Otra"]');
+    if (tipoCuentaOtraInput) {
+        tipoCuentaOtraInput.addEventListener('change', function() {
+            document.getElementById('tipoCuentaOtroGroup').style.display = this.checked ? 'block' : 'none';
+        });
+    }
     
     // Enviar formulario SIN FETCH (form submission puro)
     document.getElementById('encuestaForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
         const submitBtn = document.getElementById('submitBtn');
         submitBtn.disabled = true;
         submitBtn.textContent = 'Enviando...';
         
-        // El formulario se enviará automáticamente al Apps Script
-        // Mostrar mensaje de éxito después de 2 segundos
-        setTimeout(() => {
+        // Recolectar datos del formulario
+        const formData = new FormData(this);
+        const data = {
+            timestamp: new Date().toISOString(),
+            correo: formData.get('correo'),
+            empresa: formData.get('empresa'),
+            empresa_otro: formData.get('empresaOtro'),
+            area: formData.get('area'),
+            area_otro: formData.get('areaOtro'),
+            conectividad: formData.get('conectividad'),
+            herramientas: formData.getAll('herramientas'),
+            herramientas_otro: formData.get('herramientasOtroText'),
+            tareas: formData.getAll('tareas'),
+            tareas_otro: formData.get('tareasOtroText'),
+            frecuencia: formData.get('frecuencia'),
+            tiempoDedicado: formData.get('tiempoDedicado'),
+            tipoCuenta: formData.get('tipoCuenta'),
+            tipo_cuenta_otro: formData.get('tipoCuentaOtroText'),
+            utilidad: formData.get('utilidad')
+        };
+        
+        fetch('https://script.google.com/macros/s/AKfycbwzgZGtA-DAOzc0ld4N90cSejx42w85ZpcWk0j7qkJzLkOmkSlOlealvpWPnO9d5dE2yA/exec', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'application/json'
+            }
+        })
+        .then(response => {
             showMessage('Respuesta guardada correctamente', 'success');
             document.getElementById('encuestaForm').reset();
             document.getElementById('timestamp').value = new Date().toISOString();
@@ -41,7 +292,12 @@
             document.getElementById('herramientasOtroGroup').style.display = 'none';
             document.getElementById('tareasOtroGroup').style.display = 'none';
             document.getElementById('tipoCuentaOtroGroup').style.display = 'none';
-        }, 2000);
+        })
+        .catch(err => {
+            showMessage('Error al enviar: ' + String(err), 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar Respuesta';
+        });
     });
     
     function showMessage(text, type) {
@@ -55,8 +311,8 @@
         }, 5000);
     }
     
-    // Establecer timestamp y action al cargar
+    // Establecer timestamp al cargar
     document.getElementById('timestamp').value = new Date().toISOString();
-    document.getElementById('encuestaForm').action = 'https://script.google.com/macros/s/AKfycbwzgZGtA-DAOzc0ld4N90cSejx42w85ZpcWk0j7qkJzLkOmkSlOlealvpWPnO9d5dE2yA/exec';
-    document.getElementById('encuestaForm').method = 'POST';
 </script>
+</body>
+</html>
