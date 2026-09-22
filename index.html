@@ -44,13 +44,10 @@
                 <label for="empresa">Empresa *</label>
                 <select id="empresa" name="empresa" required>
                     <option value="">Selecciona una empresa</option>
-                    <option value="Christensen Boyles Chile">Christensen Boyles Chile</option>
+                    <option value="Geotec Perú">Geotec Perú</option>
                     <option value="Christensen Boyles Perú">Christensen Boyles Perú</option>
-                    <option value="Technosteel">Technosteel</option>
-                    <option value="UHCO">UHCO</option>
-                    <option value="Christensen Comercial">Christensen Comercial</option>
-                    <option value="MDF">MDF</option>
-                    <option value="CHRISCO">CHRISCO</option>
+                    <option value="Technosteel Perú">Technosteel Perú</option>
+                    <option value="MDF Perú">MDF Perú</option>
                     <option value="Otra">Otra</option>
                 </select>
             </div>
@@ -171,7 +168,13 @@
             
             <div class="form-group">
                 <label for="tiempoDedicado">Horas semanales dedicadas a IA *</label>
-                <input type="number" id="tiempoDedicado" name="tiempoDedicado" min="0" step="0.5" required>
+                <select id="tiempoDedicado" name="tiempoDedicado" required>
+                    <option value="">Selecciona un rango</option>
+                    <option value="Entre 0 y 1 hrs">Entre 0 y 1 hrs</option>
+                    <option value="Entre 1 y 3 hrs">Entre 1 y 3 hrs</option>
+                    <option value="Entre 3 y 5 hrs">Entre 3 y 5 hrs</option>
+                    <option value="Más de 5 hrs">Más de 5 hrs</option>
+                </select>
             </div>
             
             <div class="form-group">
@@ -277,7 +280,7 @@
         })
         .then(response => response.text())
         .then(result => {
-            showMessage('Respuesta guardada correctamente', 'success');
+            showMessage('✓ Respuesta guardada correctamente. ¡Gracias por completar la encuesta!', 'success');
             document.getElementById('encuestaForm').reset();
             document.getElementById('timestamp').value = new Date().toISOString();
             submitBtn.disabled = false;
@@ -288,9 +291,11 @@
             document.getElementById('herramientasOtroGroup').style.display = 'none';
             document.getElementById('tareasOtroGroup').style.display = 'none';
             document.getElementById('tipoCuentaOtroGroup').style.display = 'none';
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
         })
         .catch(err => {
-            showMessage('Error al enviar: ' + String(err), 'error');
+            showMessage('Hubo un error al enviar. Por favor intenta de nuevo.', 'error');
             submitBtn.disabled = false;
             submitBtn.textContent = 'Enviar Respuesta';
         });
@@ -303,7 +308,7 @@
         
         setTimeout(() => {
             messageDiv.className = 'message';
-        }, 5000);
+        }, 6000);
     }
     
     document.getElementById('timestamp').value = new Date().toISOString();
