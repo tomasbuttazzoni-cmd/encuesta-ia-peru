@@ -3,258 +3,117 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Diagnóstico de Uso de IA — Perú</title>
+    <title>Encuesta de Uso de IA - Grupo Boytec Perú</title>
     <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-        
-        body {
-            font-family: Arial, sans-serif;
-            background-color: #f5f5f5;
-            padding: 20px;
-            color: #333;
-        }
-        
-        .container {
-            max-width: 600px;
-            margin: 0 auto;
-            background: white;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        }
-        
-        h1 {
-            color: #1a472a;
-            margin-bottom: 10px;
-            font-size: 24px;
-        }
-        
-        .subtitle {
-            color: #666;
-            margin-bottom: 20px;
-            font-size: 14px;
-            line-height: 1.5;
-        }
-        
-        .form-group {
-            margin-bottom: 20px;
-        }
-        
-        label {
-            display: block;
-            font-weight: bold;
-            margin-bottom: 8px;
-            color: #333;
-            font-size: 14px;
-        }
-        
-        input[type="email"],
-        input[type="text"],
-        select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #ddd;
-            border-radius: 4px;
-            font-family: Arial, sans-serif;
-            font-size: 14px;
-        }
-        
-        input[type="email"]:focus,
-        input[type="text"]:focus,
-        select:focus {
-            outline: none;
-            border-color: #1a472a;
-            box-shadow: 0 0 4px rgba(26, 71, 42, 0.2);
-        }
-        
-        .checkbox-group,
-        .radio-group {
-            display: flex;
-            flex-direction: column;
-            gap: 8px;
-        }
-        
-        .checkbox-item,
-        .radio-item {
-            display: flex;
-            align-items: center;
-        }
-        
-        input[type="checkbox"],
-        input[type="radio"] {
-            margin-right: 8px;
-            cursor: pointer;
-        }
-        
-        .checkbox-item label,
-        .radio-item label {
-            margin: 0;
-            font-weight: normal;
-            cursor: pointer;
-        }
-        
-        .required::after {
-            content: " *";
-            color: red;
-        }
-        
-        button {
-            background-color: #1a472a;
-            color: white;
-            padding: 12px 30px;
-            border: none;
-            border-radius: 4px;
-            font-size: 16px;
-            font-weight: bold;
-            cursor: pointer;
-            width: 100%;
-        }
-        
-        button:hover {
-            background-color: #0f2d1b;
-        }
-        
-        button:disabled {
-            background-color: #ccc;
-            cursor: not-allowed;
-        }
-        
-        .message {
-            margin-top: 20px;
-            padding: 12px;
-            border-radius: 4px;
-            display: none;
-            text-align: center;
-        }
-        
-        .message.success {
-            background-color: #d4edda;
-            color: #155724;
-            border: 1px solid #c3e6cb;
-            display: block;
-        }
-        
-        .disclaimer {
-            background-color: #e8f4f8;
-            padding: 12px;
-            border-left: 4px solid #1a472a;
-            margin-bottom: 20px;
-            font-size: 13px;
-            line-height: 1.6;
-        }
-        
-        .time-estimate {
-            color: #666;
-            font-size: 13px;
-            margin-top: 5px;
-        }
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; background: #f5f5f5; padding: 20px; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        h1 { color: #333; margin-bottom: 20px; font-size: 24px; }
+        .form-group { margin-bottom: 20px; }
+        label { display: block; margin-bottom: 8px; font-weight: 500; color: #333; }
+        input, select, textarea { width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px; font-size: 14px; }
+        input:focus, select:focus, textarea:focus { outline: none; border-color: #0066cc; }
+        .checkbox-group, .radio-group { display: flex; flex-direction: column; gap: 10px; }
+        input[type="checkbox"], input[type="radio"] { width: auto; margin-right: 8px; }
+        .checkbox-item, .radio-item { display: flex; align-items: center; }
+        button { background: #0066cc; color: white; padding: 12px 24px; border: none; border-radius: 4px; font-size: 16px; cursor: pointer; width: 100%; }
+        button:hover { background: #0052a3; }
+        button:disabled { background: #ccc; cursor: not-allowed; }
+        .message { margin: 20px 0; padding: 15px; border-radius: 4px; display: none; }
+        .message.success { display: block; background: #d4edda; color: #155724; border: 1px solid #c3e6cb; }
+        .message.error { display: block; background: #f8d7da; color: #721c24; border: 1px solid #f5c6cb; }
+        .hidden { display: none; }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>DIAGNÓSTICO DE USO DE IA — PERÚ</h1>
+        <h1>Diagnóstico de Uso de IA</h1>
+        <p style="color: #666; margin-bottom: 20px;">Grupo Boytec - Perú</p>
         
-        <div class="subtitle">
-            <p>El grupo de empresas está definiendo el uso de IA para sus operaciones de trabajo. A continuación, se presenta una encuesta que tiene como único objetivo saber cuál es tu experiencia actual en el uso de IA: qué herramientas se utilizan, para qué tipo de tareas y con qué frecuencia.</p>
-            <p style="margin-top: 10px;"><strong>Tus respuestas son confidenciales.</strong> La alta dirección solo conocerá resultados agregados, nunca respuestas individuales.</p>
-            <p class="time-estimate">Tiempo estimado: 3-4 minutos.</p>
-        </div>
+        <div id="message" class="message"></div>
         
-        <div class="disclaimer">
-            ⚠️ <strong>Nota:</strong> Las respuestas se guardan en una hoja de cálculo segura del Grupo.
-        </div>
-        
-        <iframe name="responseFrame" style="display:none;"></iframe>
-        
-        <form id="encuestaForm" method="POST" target="responseFrame">
+        <form id="encuestaForm">
             <input type="hidden" id="timestamp" name="timestamp">
             
             <div class="form-group">
-                <label for="correo">Correo corporativo</label>
-                <input type="email" id="correo" name="correo" placeholder="tu.correo@empresa.pe" required>
+                <label for="correo">Correo electrónico *</label>
+                <input type="email" id="correo" name="correo" required>
             </div>
             
             <div class="form-group">
-                <label for="empresa" class="required">¿En qué empresa del Grupo trabajas?</label>
+                <label for="empresa">Empresa *</label>
                 <select id="empresa" name="empresa" required>
-                    <option value="">-- Selecciona --</option>
-                    <option value="Geotec Perú">Geotec Perú</option>
+                    <option value="">Selecciona una empresa</option>
+                    <option value="Christensen Boyles Chile">Christensen Boyles Chile</option>
                     <option value="Christensen Boyles Perú">Christensen Boyles Perú</option>
-                    <option value="Technosteel Perú">Technosteel Perú</option>
-                    <option value="MDF Perú">MDF Perú</option>
-                </select>
-            </div>
-            
-            <div class="form-group">
-                <label for="area" class="required">¿En qué área te desempeñas?</label>
-                <select id="area" name="area" required>
-                    <option value="">-- Selecciona --</option>
-                    <option value="Dirección / Gerencia">Dirección / Gerencia</option>
-                    <option value="Comercial / Ventas">Comercial / Ventas</option>
-                    <option value="Operaciones en Sitio">Operaciones en Sitio (faena/mina)</option>
-                    <option value="Producción / Manufactura">Producción / Manufactura</option>
-                    <option value="Logística">Logística / Cadena de Suministro</option>
-                    <option value="Finanzas">Finanzas / Contabilidad</option>
-                    <option value="Recursos Humanos">Recursos Humanos</option>
-                    <option value="Tecnología">Tecnología / Sistemas</option>
-                    <option value="Cumplimiento">Cumplimiento Regulatorio y Legal</option>
+                    <option value="Technosteel">Technosteel</option>
+                    <option value="UHCO">UHCO</option>
+                    <option value="Christensen Comercial">Christensen Comercial</option>
+                    <option value="MDF">MDF</option>
+                    <option value="CHRISCO">CHRISCO</option>
                     <option value="Otra">Otra</option>
                 </select>
             </div>
             
-            <div class="form-group" id="areaOtroGroup" style="display: none;">
-                <label for="areaOtro">¿Cuál?</label>
-                <input type="text" id="areaOtro" name="areaOtro" placeholder="Especifica tu área">
+            <div id="empresaOtroGroup" class="form-group hidden">
+                <label for="empresaOtro">Especifica tu empresa</label>
+                <input type="text" id="empresaOtro" name="empresaOtro">
             </div>
             
             <div class="form-group">
-                <label class="required">¿Tienes acceso consistente a internet/cloud desde tu puesto?</label>
+                <label for="area">Área o departamento *</label>
+                <select id="area" name="area" required>
+                    <option value="">Selecciona un área</option>
+                    <option value="Operaciones">Operaciones</option>
+                    <option value="Comercial">Comercial</option>
+                    <option value="Finanzas">Finanzas</option>
+                    <option value="RRHH">RRHH</option>
+                    <option value="Tecnología">Tecnología</option>
+                    <option value="Otra">Otra</option>
+                </select>
+            </div>
+            
+            <div id="areaOtroGroup" class="form-group hidden">
+                <label for="areaOtro">Especifica tu área</label>
+                <input type="text" id="areaOtro" name="areaOtro">
+            </div>
+            
+            <div class="form-group">
+                <label>Conectividad a internet *</label>
                 <div class="radio-group">
                     <div class="radio-item">
-                        <input type="radio" id="conectividadSi" name="conectividad" value="Sí" required>
-                        <label for="conectividadSi">Sí, siempre</label>
+                        <input type="radio" id="conectFijaAlta" name="conectividad" value="Fija de alta velocidad" required>
+                        <label for="conectFijaAlta">Fija de alta velocidad</label>
                     </div>
                     <div class="radio-item">
-                        <input type="radio" id="conectividadParcial" name="conectividad" value="Parcial">
-                        <label for="conectividadParcial">Parcial (en faena a veces no)</label>
+                        <input type="radio" id="conectFijaBaja" name="conectividad" value="Fija de baja velocidad">
+                        <label for="conectFijaBaja">Fija de baja velocidad</label>
                     </div>
                     <div class="radio-item">
-                        <input type="radio" id="conectividadNo" name="conectividad" value="No">
-                        <label for="conectividadNo">No, tengo acceso limitado</label>
+                        <input type="radio" id="conectMovil" name="conectividad" value="Móvil">
+                        <label for="conectMovil">Móvil</label>
                     </div>
                 </div>
             </div>
             
             <div class="form-group">
-                <label class="required">¿Cuáles herramientas de IA usas?</label>
+                <label>Herramientas de IA que usas *</label>
                 <div class="checkbox-group">
                     <div class="checkbox-item">
-                        <input type="checkbox" id="chatgpt" name="herramientas" value="ChatGPT">
-                        <label for="chatgpt">ChatGPT</label>
+                        <input type="checkbox" id="herramientaClaude" name="herramientas" value="Claude">
+                        <label for="herramientaClaude">Claude</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="gemini" name="herramientas" value="Gemini (Google)">
-                        <label for="gemini">Gemini (Google)</label>
+                        <input type="checkbox" id="herramientaChatGPT" name="herramientas" value="ChatGPT">
+                        <label for="herramientaChatGPT">ChatGPT</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="claude" name="herramientas" value="Claude">
-                        <label for="claude">Claude</label>
+                        <input type="checkbox" id="herramientaCopilot" name="herramientas" value="Microsoft Copilot">
+                        <label for="herramientaCopilot">Microsoft Copilot</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="copilot" name="herramientas" value="Copilot (Microsoft)">
-                        <label for="copilot">Copilot (Microsoft)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="perplexity" name="herramientas" value="Perplexity">
-                        <label for="perplexity">Perplexity</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="deepseek" name="herramientas" value="DeepSeek">
-                        <label for="deepseek">DeepSeek</label>
+                        <input type="checkbox" id="herramientaGemini" name="herramientas" value="Google Gemini">
+                        <label for="herramientaGemini">Google Gemini</label>
                     </div>
                     <div class="checkbox-item">
                         <input type="checkbox" id="herramientasOtra" name="herramientas" value="Otra">
@@ -263,45 +122,29 @@
                 </div>
             </div>
             
-            <div class="form-group" id="herramientasOtroGroup" style="display: none;">
-                <label for="herramientasOtro">¿Cuál?</label>
-                <input type="text" id="herramientasOtro" name="herramientasOtro" placeholder="Especifica">
+            <div id="herramientasOtroGroup" class="form-group hidden">
+                <label for="herramientasOtroText">¿Cuál otra herramienta?</label>
+                <input type="text" id="herramientasOtroText" name="herramientasOtroText">
             </div>
             
             <div class="form-group">
-                <label class="required">¿Para qué tipo de tareas usas IA?</label>
+                <label>Tareas donde usas IA *</label>
                 <div class="checkbox-group">
                     <div class="checkbox-item">
-                        <input type="checkbox" id="redaccion" name="tareas" value="Redacción y revisión de documentos">
-                        <label for="redaccion">Redacción y revisión de documentos</label>
+                        <input type="checkbox" id="tareaRedaccion" name="tareas" value="Redacción y generación de textos">
+                        <label for="tareaRedaccion">Redacción y generación de textos</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="analisis" name="tareas" value="Análisis de datos">
-                        <label for="analisis">Análisis de datos y estadística</label>
+                        <input type="checkbox" id="tareaAnalisis" name="tareas" value="Análisis de datos">
+                        <label for="tareaAnalisis">Análisis de datos</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="programacion" name="tareas" value="Programación y scripting">
-                        <label for="programacion">Programación y scripting</label>
+                        <input type="checkbox" id="tareaProgramacion" name="tareas" value="Programación">
+                        <label for="tareaProgramacion">Programación</label>
                     </div>
                     <div class="checkbox-item">
-                        <input type="checkbox" id="busqueda" name="tareas" value="Búsqueda y síntesis">
-                        <label for="busqueda">Búsqueda y síntesis de información</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="ideacion" name="tareas" value="Ideación y brainstorming">
-                        <label for="ideacion">Ideación y brainstorming</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="diseño" name="tareas" value="Diseño gráfico">
-                        <label for="diseño">Diseño gráfico o generación de imágenes</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="cumplimiento" name="tareas" value="Cumplimiento regulatorio">
-                        <label for="cumplimiento">Cumplimiento regulatorio (SUNAT, AFP, laboral)</label>
-                    </div>
-                    <div class="checkbox-item">
-                        <input type="checkbox" id="integracion" name="tareas" value="Integración con ERP">
-                        <label for="integracion">Integración con ERP o sistemas corporativos</label>
+                        <input type="checkbox" id="tareaIdiomas" name="tareas" value="Traducción e idiomas">
+                        <label for="tareaIdiomas">Traducción e idiomas</label>
                     </div>
                     <div class="checkbox-item">
                         <input type="checkbox" id="tareasOtra" name="tareas" value="Otra">
@@ -310,167 +153,160 @@
                 </div>
             </div>
             
-            <div class="form-group" id="tareasOtroGroup" style="display: none;">
-                <label for="tareasOtro">¿Cuál?</label>
-                <input type="text" id="tareasOtro" name="tareasOtro" placeholder="Especifica">
+            <div id="tareasOtroGroup" class="form-group hidden">
+                <label for="tareasOtroText">¿Cuál otra tarea?</label>
+                <input type="text" id="tareasOtroText" name="tareasOtroText">
             </div>
             
             <div class="form-group">
-                <label class="required">¿Con qué frecuencia usas IA?</label>
+                <label for="frecuencia">Frecuencia de uso *</label>
+                <select id="frecuencia" name="frecuencia" required>
+                    <option value="">Selecciona frecuencia</option>
+                    <option value="Diaria">Diaria</option>
+                    <option value="Varias veces a la semana">Varias veces a la semana</option>
+                    <option value="Una vez a la semana">Una vez a la semana</option>
+                    <option value="Ocasionalmente">Ocasionalmente</option>
+                </select>
+            </div>
+            
+            <div class="form-group">
+                <label for="tiempoDedicado">Horas semanales dedicadas a IA *</label>
+                <input type="number" id="tiempoDedicado" name="tiempoDedicado" min="0" step="0.5" required>
+            </div>
+            
+            <div class="form-group">
+                <label>Tipo de cuenta que usas *</label>
                 <div class="radio-group">
                     <div class="radio-item">
-                        <input type="radio" id="frecDiaria" name="frecuencia" value="Diariamente" required>
-                        <label for="frecDiaria">Diariamente</label>
+                        <input type="radio" id="tipoCuentaGratuita" name="tipoCuenta" value="Gratuita" required>
+                        <label for="tipoCuentaGratuita">Gratuita</label>
                     </div>
                     <div class="radio-item">
-                        <input type="radio" id="frecVarias" name="frecuencia" value="Varias veces por semana">
-                        <label for="frecVarias">Varias veces por semana</label>
+                        <input type="radio" id="tipoCuentaPagada" name="tipoCuenta" value="Pagada">
+                        <label for="tipoCuentaPagada">Pagada</label>
                     </div>
                     <div class="radio-item">
-                        <input type="radio" id="frecUnaVez" name="frecuencia" value="Una o dos veces por semana">
-                        <label for="frecUnaVez">Una o dos veces por semana</label>
+                        <input type="radio" id="tipoCuentaEnterprise" name="tipoCuenta" value="Enterprise">
+                        <label for="tipoCuentaEnterprise">Enterprise (Grupo Boytec)</label>
                     </div>
                     <div class="radio-item">
-                        <input type="radio" id="frecMensual" name="frecuencia" value="Menos de una vez por semana">
-                        <label for="frecMensual">Menos de una vez por semana</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="frecNunca" name="frecuencia" value="Nunca">
-                        <label for="frecNunca">Nunca o casi nunca</label>
+                        <input type="radio" id="tipoCuentaOtra" name="tipoCuenta" value="Otra">
+                        <label for="tipoCuentaOtra">Otra</label>
                     </div>
                 </div>
             </div>
             
-            <div class="form-group">
-                <label class="required">¿Cuánto tiempo dedicas a IA por semana?</label>
-                <div class="radio-group">
-                    <div class="radio-item">
-                        <input type="radio" id="tiempoMenos1" name="tiempoDedicado" value="Menos de 1 hora" required>
-                        <label for="tiempoMenos1">Menos de 1 hora</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="tiempo1a5" name="tiempoDedicado" value="1-5 horas">
-                        <label for="tiempo1a5">1-5 horas</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="tiempo5a10" name="tiempoDedicado" value="5-10 horas">
-                        <label for="tiempo5a10">5-10 horas</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="tiempoMas10" name="tiempoDedicado" value="Más de 10 horas">
-                        <label for="tiempoMas10">Más de 10 horas</label>
-                    </div>
-                </div>
+            <div id="tipoCuentaOtroGroup" class="form-group hidden">
+                <label for="tipoCuentaOtroText">¿Cuál otra?</label>
+                <input type="text" id="tipoCuentaOtroText" name="tipoCuentaOtroText">
             </div>
             
             <div class="form-group">
-                <label class="required">¿Qué tipo de cuenta usas?</label>
-                <div class="radio-group">
-                    <div class="radio-item">
-                        <input type="radio" id="cuentaGratuita" name="tipoCuenta" value="Gratuita personal" required>
-                        <label for="cuentaGratuita">Gratuita personal (ChatGPT, Gemini, etc.)</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="cuentaPagada" name="tipoCuenta" value="Pagada personal">
-                        <label for="cuentaPagada">Pagada personal (pago de mi bolsillo)</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="cuentaCorporativa" name="tipoCuenta" value="Corporativa">
-                        <label for="cuentaCorporativa">Corporativa (la empresa paga)</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="cuentaOtra" name="tipoCuenta" value="Otra">
-                        <label for="cuentaOtra">Otra</label>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="form-group" id="tipoCuentaOtroGroup" style="display: none;">
-                <label for="tipoCuentaOtro">¿Cuál?</label>
-                <input type="text" id="tipoCuentaOtro" name="tipoCuentaOtro" placeholder="Especifica">
-            </div>
-            
-            <div class="form-group">
-                <label class="required">¿Te parece útil que la empresa provea cuentas enterprise de IA?</label>
-                <div class="radio-group">
-                    <div class="radio-item">
-                        <input type="radio" id="utilMuyUtil" name="utilidad" value="Muy útil" required>
-                        <label for="utilMuyUtil">Muy útil</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="utilUtil" name="utilidad" value="Útil">
-                        <label for="utilUtil">Útil</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="utilNeutro" name="utilidad" value="Indiferente">
-                        <label for="utilNeutro">Indiferente</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="utilPoco" name="utilidad" value="Poco útil">
-                        <label for="utilPoco">Poco útil</label>
-                    </div>
-                    <div class="radio-item">
-                        <input type="radio" id="utilNada" name="utilidad" value="Nada útil">
-                        <label for="utilNada">Nada útil</label>
-                    </div>
-                </div>
+                <label for="utilidad">¿Qué tan útil ha sido la IA en tu trabajo? (1-5) *</label>
+                <select id="utilidad" name="utilidad" required>
+                    <option value="">Selecciona</option>
+                    <option value="1">1 - Nada útil</option>
+                    <option value="2">2 - Poco útil</option>
+                    <option value="3">3 - Moderadamente útil</option>
+                    <option value="4">4 - Muy útil</option>
+                    <option value="5">5 - Extremadamente útil</option>
+                </select>
             </div>
             
             <button type="submit" id="submitBtn">Enviar Respuesta</button>
-            
-            <div id="message" class="message"></div>
         </form>
     </div>
+
+<script>
+    document.getElementById('empresa').addEventListener('change', function() {
+        document.getElementById('empresaOtroGroup').style.display = this.value === 'Otra' ? 'block' : 'none';
+    });
     
-    <script>
-        document.getElementById('area').addEventListener('change', function() {
-            document.getElementById('areaOtroGroup').style.display = this.value === 'Otra' ? 'block' : 'none';
-        });
-        
-        document.getElementById('herramientasOtra').addEventListener('change', function() {
-            document.getElementById('herramientasOtroGroup').style.display = this.checked ? 'block' : 'none';
-        });
-        
-        document.getElementById('tareasOtra').addEventListener('change', function() {
-            document.getElementById('tareasOtroGroup').style.display = this.checked ? 'block' : 'none';
-        });
-        
-        document.querySelector('input[name="tipoCuenta"][value="Otra"]').addEventListener('change', function() {
+    document.getElementById('area').addEventListener('change', function() {
+        document.getElementById('areaOtroGroup').style.display = this.value === 'Otra' ? 'block' : 'none';
+    });
+    
+    document.getElementById('herramientasOtra').addEventListener('change', function() {
+        document.getElementById('herramientasOtroGroup').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    document.getElementById('tareasOtra').addEventListener('change', function() {
+        document.getElementById('tareasOtroGroup').style.display = this.checked ? 'block' : 'none';
+    });
+    
+    const tipoCuentaOtraInput = document.querySelector('input[name="tipoCuenta"][value="Otra"]');
+    if (tipoCuentaOtraInput) {
+        tipoCuentaOtraInput.addEventListener('change', function() {
             document.getElementById('tipoCuentaOtroGroup').style.display = this.checked ? 'block' : 'none';
         });
+    }
+    
+    document.getElementById('encuestaForm').addEventListener('submit', function(e) {
+        e.preventDefault();
         
-        document.getElementById('encuestaForm').addEventListener('submit', function(e) {
-            const submitBtn = document.getElementById('submitBtn');
-            submitBtn.disabled = true;
-            submitBtn.textContent = 'Enviando...';
+        const submitBtn = document.getElementById('submitBtn');
+        submitBtn.disabled = true;
+        submitBtn.textContent = 'Enviando...';
+        
+        const formData = new FormData(this);
+        const data = {
+            timestamp: new Date().toISOString(),
+            correo: formData.get('correo'),
+            empresa: formData.get('empresa'),
+            empresa_otro: formData.get('empresaOtro'),
+            area: formData.get('area'),
+            area_otro: formData.get('areaOtro'),
+            conectividad: formData.get('conectividad'),
+            herramientas: formData.getAll('herramientas'),
+            herramientas_otro: formData.get('herramientasOtroText'),
+            tareas: formData.getAll('tareas'),
+            tareas_otro: formData.get('tareasOtroText'),
+            frecuencia: formData.get('frecuencia'),
+            tiempoDedicado: formData.get('tiempoDedicado'),
+            tipoCuenta: formData.get('tipoCuenta'),
+            tipo_cuenta_otro: formData.get('tipoCuentaOtroText'),
+            utilidad: formData.get('utilidad')
+        };
+        
+        fetch('https://script.google.com/macros/s/AKfycbze65UYj4IGpSYczL6CYEYaygY8P1x6XOogKw02R8AwSrmVxQ03aR9b0jZWkqckYJ12/exec', {
+            method: 'POST',
+            body: JSON.stringify(data),
+            headers: {
+                'Content-Type': 'text/plain;charset=utf-8'
+            }
+        })
+        .then(response => response.text())
+        .then(result => {
+            showMessage('Respuesta guardada correctamente', 'success');
+            document.getElementById('encuestaForm').reset();
+            document.getElementById('timestamp').value = new Date().toISOString();
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar Respuesta';
             
-            setTimeout(() => {
-                showMessage('Respuesta guardada correctamente', 'success');
-                document.getElementById('encuestaForm').reset();
-                document.getElementById('timestamp').value = new Date().toISOString();
-                submitBtn.disabled = false;
-                submitBtn.textContent = 'Enviar Respuesta';
-                
-                document.getElementById('areaOtroGroup').style.display = 'none';
-                document.getElementById('herramientasOtroGroup').style.display = 'none';
-                document.getElementById('tareasOtroGroup').style.display = 'none';
-                document.getElementById('tipoCuentaOtroGroup').style.display = 'none';
-            }, 2000);
+            document.getElementById('empresaOtroGroup').style.display = 'none';
+            document.getElementById('areaOtroGroup').style.display = 'none';
+            document.getElementById('herramientasOtroGroup').style.display = 'none';
+            document.getElementById('tareasOtroGroup').style.display = 'none';
+            document.getElementById('tipoCuentaOtroGroup').style.display = 'none';
+        })
+        .catch(err => {
+            showMessage('Error al enviar: ' + String(err), 'error');
+            submitBtn.disabled = false;
+            submitBtn.textContent = 'Enviar Respuesta';
         });
+    });
+    
+    function showMessage(text, type) {
+        const messageDiv = document.getElementById('message');
+        messageDiv.textContent = text;
+        messageDiv.className = 'message ' + type;
         
-        function showMessage(text, type) {
-            const messageDiv = document.getElementById('message');
-            messageDiv.textContent = text;
-            messageDiv.className = 'message ' + type;
-            
-            setTimeout(() => {
-                messageDiv.className = 'message';
-            }, 5000);
-        }
-        
-        document.getElementById('timestamp').value = new Date().toISOString();
-        document.getElementById('encuestaForm').action = 'https://script.google.com/macros/s/AKfycbwzgZGtA-DAOzc0ld4N90cSejx42w85ZpcWk0j7qkJzLkOmkSlOlealvpWPnO9d5dE2yA/exec';
-        document.getElementById('encuestaForm').method = 'POST';
-    </script>
+        setTimeout(() => {
+            messageDiv.className = 'message';
+        }, 5000);
+    }
+    
+    document.getElementById('timestamp').value = new Date().toISOString();
+</script>
 </body>
 </html>
